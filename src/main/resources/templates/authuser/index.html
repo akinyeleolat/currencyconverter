@@ -6,6 +6,11 @@
     <title>Admin Page</title>
     <link rel="stylesheet" type="text/css" th:href="@{/css/home.css}"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://formden.com/static/cdn/bootstrap-iso.css" />
+    <link rel="stylesheet" href="https://formden.com/static/cdn/font-awesome/4.4.0/css/font-awesome.min.css" />
+
+    <style>.bootstrap-iso .formden_header h2, .bootstrap-iso .formden_header p, .bootstrap-iso form{font-family: Arial, Helvetica, sans-serif; color: black}.bootstrap-iso form button, .bootstrap-iso form button:hover{color: white !important;} .asteriskField{color: red;}</style>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </head>
@@ -31,6 +36,71 @@
             </div>
             <div class="panel-body">
                 <div class="container">
+        <!-- HTML Form (wrapped in a .bootstrap-iso div) -->
+        <div class="bootstrap-iso">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-6 col-sm-6 col-xs-12">
+                        <form method="post" th:action="@{/authuser/home}" th:object="${historicalData}">
+                            <div class="form-group ">
+                                <label class="control-label " for="select">
+                                    Select a Base currency
+                                </label>
+                                <select class="select form-control" id="select" th:field="*{baseCurrencyInput}">
+                                    <option value="USD">
+                                        USD
+                                    </option>
+                                    <option value="NGN">
+                                        NGN
+                                    </option>
+                                    <option value="EUR">
+                                        EUR
+                                    </option>
+                                    <option value="GBP">
+                                        GBP
+                                    </option>
+                                    <option value="NZD">
+                                        NZD
+                                    </option>
+                                    <option value="AUD">
+                                        AUD
+                                    </option>
+                                    <option value="JPY">
+                                        JPY
+                                    </option>
+                                    <option value="HUF">
+                                        HUF
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label requiredField" for="date">
+                                    Date
+                                    <span class="asteriskField">
+        *
+       </span>
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-addon">
+                                        <i class="fa fa-calendar-check-o">
+                                        </i>
+                                    </div>
+                                    <input class="form-control" id="date" name="historicalDate" placeholder="yyyy-mm-dd" type="date" th:field="*{historicalDate}" required pattern="\d{4}-\d{2}-\d{2}"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div>
+                                    <button class="btn btn-primary " name="submit" type="submit">
+                                        Submit
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+                <div class="container">
                     <h1>Currency Converter</h1>
                     <table>
                         <div class="nine columns">
@@ -54,5 +124,7 @@
     </div>
 
 </div>
+</div>
 </body>
 </html>
+
