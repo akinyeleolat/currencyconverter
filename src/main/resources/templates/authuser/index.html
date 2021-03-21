@@ -24,11 +24,33 @@
             <div class="panel-heading">
                 <span th:utext="${userName}"></span>
             </div>
-            <div class="panel-body">
-               welcome
+            <div>
+                <div class="container">
+                    Base Currency: <span th:text="${baseCurrency}"></span>
+                </div>
             </div>
-            <p class="admin-message-text text-center" th:utext="${adminMessage}"></p>
+            <div class="panel-body">
+                <div class="container">
+                    <h1>Currency Converter</h1>
+                    <table>
+                        <div class="nine columns">
+                            <th>
+                            <td>Currency</td>
+                            <td>Description</td>
+                            <td>Rate</td>
+                            </th>
+                            <tr class="row" th:each="currency : ${currencyList}">
+                                <td th:text="${currency.key}"> </td>
+                                <td th:text="${currency.value}"></td>
+                                <td th:text="${currencyRateList.get(currency.key)}"></td>
+                            </tr>
+
+                        </div>
+                    </table>
+            </div>
         </div>
+    </div>
+
     </div>
 
 </div>
