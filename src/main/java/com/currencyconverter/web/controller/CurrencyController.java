@@ -55,24 +55,25 @@ public class CurrencyController {
         modelAndView.addObject("baseCurrency",baseCurrency);
         modelAndView.addObject("currencyList",currencyList);
         modelAndView.addObject("currencyRateList",rates);
-        modelAndView.addObject("historicalData", new UserData());
+        modelAndView.addObject("userData", new UserData());
         modelAndView.setViewName("authuser/index");
         return modelAndView;
     }
 
     @PostMapping(value="/authuser/home")
-    public ModelAndView processHistoricalData(UserData historicalData, BindingResult bindingResult) throws ParseException {
+    public ModelAndView processHistoricalData(UserData userDataInput, BindingResult bindingResult) throws ParseException {
         ModelAndView modelAndView = new ModelAndView();
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.findUserByUserName(auth.getName());
 
-        modelAndView.addObject("historicalData", new UserData());
+        Date historicalDate;
 
-        Date historicalDate = historicalData.getHistoricalDate();
+        historicalDate = userDataInput.getHistoricalDate() == null? new Date(): userDataInput.getHistoricalDate();
 
 
         HashMap<String, HashMap<String, Double>> currencyHistoryData = service.getHistoricalData(historicalDate);
+
         String baseCurrency = String.valueOf(currencyHistoryData.get("base"));
 
 
@@ -83,12 +84,33 @@ public class CurrencyController {
 
         Map<String, String> currencyList = service.currencyList();
 
+
+
+
+
+        if(userDataInput.getAmount() != null){
+            String baseCurrencyInput = userDataInput.getBaseCurrencyInput();
+
+            String expectedCurrencyInput = userDataInput.getExpectedCurrencyInput();
+            Double amount = userDataInput.getAmount();
+            UserData conversionResult = service.currencyConverter(baseCurrencyInput,expectedCurrencyInput, amount);
+
+            Map<String, String> results = new HashMap<>();
+            results.put("converted", conversionResult.getExpectedAmount().toString()+" "+conversionResult.getExpectedCurrencyInput());
+            results.put("amount",conversionResult.getAmount().toString()+ " "+conversionResult.getBaseCurrencyInput());
+            results.put("rates", conversionResult.getRates().toString()+" "+conversionResult.getExpectedCurrencyInput()+"_"+conversionResult.getBaseCurrencyInput());
+
+            modelAndView.addObject("conversionResults", results);
+        }
+
+
         modelAndView.addObject("userName", "Welcome " + user.getUserName() + "/" + user.getFirstName() + " " + user.getLastName() + " (" + user.getEmail() + ")");
         modelAndView.addObject("baseCurrency",baseCurrency);
         modelAndView.addObject("valueDate",timeStamp);
         modelAndView.addObject("currencyList",currencyList);
         modelAndView.addObject("currencyRateList",rates);
-        modelAndView.addObject("historicalData", new UserData());
+        modelAndView.addObject("userData", new UserData());
+
         modelAndView.setViewName("authuser/index");
         return modelAndView;
     }

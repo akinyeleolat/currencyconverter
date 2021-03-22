@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.currencyconverter.web.model.UserData;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
@@ -18,7 +20,15 @@ public class CurrencyServiceImpl {
     @Value("${exchange.api.app_id}")
     private String appID;
 
+    @Value("${currency.converter.api_url}")
+    private String currencyConverterApiUrl;
+
+    @Value("${currency.converter.api_key}")
+    private String currencyConverterApiKey;
+
     private String resourceUrl;
+
+    private String currencyConverterResource;
 
     private RestTemplate restTemplate;
 
@@ -57,4 +67,32 @@ public class CurrencyServiceImpl {
 
         return (HashMap<String, HashMap<String, Double>>) restTemplate.getForObject(resource, Map.class);
     }
+
+    public UserData currencyConverter (String baseCurrency, String expectedCurrency, Double amount){
+        currencyConverterResource = currencyConverterApiUrl+baseCurrency+"_"+expectedCurrency+"&compact=ultra&apiKey="+currencyConverterApiKey;
+
+        this.resourceUrl = currencyConverterResource;
+
+        Map result =  restTemplate.getForObject(resourceUrl,Map.class);
+
+        assert result != null;
+        Double rate = Double.parseDouble(String.valueOf(result.values().toArray()[0]));
+
+        UserData newData = new UserData();
+
+        newData.setAmount(amount);
+        newData.setRates(rate);
+        newData.setBaseCurrencyInput(baseCurrency);
+        newData.setExpectedCurrencyInput(expectedCurrency);
+
+        Double expectedAmount = rate * amount;
+
+        newData.setExpectedAmount(expectedAmount);
+
+
+        return  newData;
+
+    }
+
+    //TODO: error handling, convert timestamp, cache resource, implement jmx
 }

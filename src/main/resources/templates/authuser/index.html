@@ -41,38 +41,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-md-6 col-sm-6 col-xs-12">
-                        <form method="post" th:action="@{/authuser/home}" th:object="${historicalData}">
-                            <div class="form-group ">
-                                <label class="control-label " for="select">
-                                    Select a Base currency
-                                </label>
-                                <select class="select form-control" id="select" th:field="*{baseCurrencyInput}">
-                                    <option value="USD">
-                                        USD
-                                    </option>
-                                    <option value="NGN">
-                                        NGN
-                                    </option>
-                                    <option value="EUR">
-                                        EUR
-                                    </option>
-                                    <option value="GBP">
-                                        GBP
-                                    </option>
-                                    <option value="NZD">
-                                        NZD
-                                    </option>
-                                    <option value="AUD">
-                                        AUD
-                                    </option>
-                                    <option value="JPY">
-                                        JPY
-                                    </option>
-                                    <option value="HUF">
-                                        HUF
-                                    </option>
-                                </select>
-                            </div>
+                        <form method="post" th:action="@{/authuser/home}" th:object="${userData}">
                             <div class="form-group">
                                 <label class="control-label requiredField" for="date">
                                     Date
@@ -91,13 +60,115 @@
                             <div class="form-group">
                                 <div>
                                     <button class="btn btn-primary " name="submit" type="submit">
-                                        Submit
+                                        View Historical Data
                                     </button>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
+                <div class="bootstrap-iso">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <form method="post" th:action="@{/authuser/home}" th:object="${userData}">
+                                    <div class="form-group ">
+                                        <label class="control-label " for="amount">
+                                            Amount
+                                        </label>
+                                        <div class="input-group">
+                                            <div class="input-group-addon">
+                                                <i class="fa fa-money">
+                                                </i>
+                                            </div>
+                                            <input class="form-control" id="amount" name="amount" placeholder="amount" type="text" th:field="*{amount}" required/>
+                                        </div>
+                                    </div>
+                                    <div class="form-group ">
+                                        <label class="control-label " for="select">
+                                            Select a Base currency
+                                        </label>
+                                        <select class="select form-control" id="select" th:field="*{baseCurrencyInput}">
+                                            <option value="USD">
+                                                USD
+                                            </option>
+                                            <option value="NGN">
+                                                NGN
+                                            </option>
+                                            <option value="EUR">
+                                                EUR
+                                            </option>
+                                            <option value="GBP">
+                                                GBP
+                                            </option>
+                                            <option value="NZD">
+                                                NZD
+                                            </option>
+                                            <option value="AUD">
+                                                AUD
+                                            </option>
+                                            <option value="JPY">
+                                                JPY
+                                            </option>
+                                            <option value="HUF">
+                                                HUF
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group ">
+                                        <label class="control-label " for="select">
+                                            Select a Expected currency
+                                        </label>
+                                        <select class="select form-control" id="select2" th:field="*{expectedCurrencyInput}">
+                                            <option value="USD">
+                                                USD
+                                            </option>
+                                            <option value="NGN">
+                                                NGN
+                                            </option>
+                                            <option value="EUR">
+                                                EUR
+                                            </option>
+                                            <option value="GBP">
+                                                GBP
+                                            </option>
+                                            <option value="NZD">
+                                                NZD
+                                            </option>
+                                            <option value="AUD">
+                                                AUD
+                                            </option>
+                                            <option value="JPY">
+                                                JPY
+                                            </option>
+                                            <option value="HUF">
+                                                HUF
+                                            </option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <div>
+                                            <button class="btn btn-primary " name="submit" type="submit">
+                                                Submit
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                                    <div class="container">
+                                        <h2>Current Rate</h2>
+                                            <table>
+                                                    <tr class="row" th:each="obj : ${conversionResults}">
+                                                        <td th:text="${obj.key}"> </td>
+                                                        <td th:text="${obj.value}"></td>
+                                                    </tr>
+
+
+                                            </table>
+                                    </div>
+
+                            </div>
+                        </div>
             </div>
         </div>
                 <div class="container">
