@@ -34,6 +34,34 @@
                     Base Currency: <span th:text="${baseCurrency}"></span>
                 </div>
             </div>
+            <div>
+
+                <table>
+                    <thead>
+                    <tr>
+                        <th>SN</th>
+                        <th> Expected</th>
+                        <th> Base</th>
+                        <th>Amount</th>
+                        <th>Expected</th>
+                        <th>Checked </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:if="${recentSearches.isEmpty()}">
+                        <td colspan="2"> No search yet Available </td>
+                    </tr>
+                    <tr th:each="search : ${recentSearches}">
+                        <td><span th:text="${search.id}"> S/N </span></td>
+                        <td><span th:text="${search.expectedCurrencyInput}">Expected</span></td>
+                        <td><span th:text="${search.baseCurrencyInput}">Base</span></td>
+                        <td><span th:text="${search.amount}"> Amount </span></td>
+                        <td><span th:text="${search.expectedAmount}"> Expected Amount </span></td>
+                        <td><span th:text="${search.createdAt}"> CreatedAt </span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
             <div class="panel-body">
                 <div class="container">
         <!-- HTML Form (wrapped in a .bootstrap-iso div) -->
@@ -149,9 +177,7 @@
 
                                     <div class="form-group">
                                         <div>
-                                            <button class="btn btn-primary " name="submit" type="submit">
-                                                Submit
-                                            </button>
+                                            <input type="submit" value="Submit" class="btn btn-primary"/>
                                         </div>
                                     </div>
                                 </form>
