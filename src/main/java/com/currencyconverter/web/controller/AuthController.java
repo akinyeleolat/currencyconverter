@@ -3,9 +3,6 @@ package com.currencyconverter.web.controller;
 
 import com.currencyconverter.web.model.User;
 import com.currencyconverter.web.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +15,10 @@ import javax.validation.Valid;
 public class AuthController {
 
 
-    @Autowired
+    public AuthController(UserService userService) {
+        this.userService=userService;
+    }
+
     private UserService userService;
 
     @GetMapping(value={"/", "/login"})
@@ -59,15 +59,5 @@ public class AuthController {
         return modelAndView;
     }
 
-    @GetMapping(value="/authuser/home")
-    public ModelAndView home(){
-        ModelAndView modelAndView = new ModelAndView();
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByUserName(auth.getName());
-        modelAndView.addObject("userName", "Welcome " + user.getUserName() + "/" + user.getFirstName() + " " + user.getLastName() + " (" + user.getEmail() + ")");
-        modelAndView.addObject("adminMessage","Content Available Only for authenticated users");
-        modelAndView.setViewName("authuser/index");
-        return modelAndView;
-    }
 
 }
