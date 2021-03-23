@@ -63,11 +63,14 @@ public class CurrencyController {
 
         HashMap<String, Double> rates = currencyHistoryData.get("rates");
 
+        Date timeStamp = new Date();
+
         Map<String, String> currencyList = service.currencyList();
 
 
         modelAndView.addObject("userName", "Welcome " + user.getUserName() + "/" + user.getFirstName() + " " + user.getLastName() + " (" + user.getEmail() + ")");
         modelAndView.addObject("baseCurrency",baseCurrency);
+        modelAndView.addObject("valueDate",timeStamp);
         modelAndView.addObject("currencyList",currencyList);
         modelAndView.addObject("currencyRateList",rates);
         modelAndView.addObject("userData", new SearchData());
@@ -91,9 +94,6 @@ public class CurrencyController {
         HashMap<String, HashMap<String, Double>> currencyHistoryData = service.getHistoricalData(historicalDate);
 
         String baseCurrency = String.valueOf(currencyHistoryData.get("base"));
-
-
-        String timeStamp = String.valueOf(currencyHistoryData.get("timestamp"));
 
 
         HashMap<String, Double> rates = currencyHistoryData.get("rates");
@@ -120,7 +120,7 @@ public class CurrencyController {
 
         modelAndView.addObject("userName", "Welcome " + user.getUserName() + "/" + user.getFirstName() + " " + user.getLastName() + " (" + user.getEmail() + ")");
         modelAndView.addObject("baseCurrency",baseCurrency);
-        modelAndView.addObject("valueDate",timeStamp);
+        modelAndView.addObject("valueDate",historicalDate);
         modelAndView.addObject("currencyList",currencyList);
         modelAndView.addObject("currencyRateList",rates);
         modelAndView.addObject("userData", new SearchData());
