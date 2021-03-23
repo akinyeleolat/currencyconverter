@@ -2,13 +2,15 @@ package com.currencyconverter.web.service;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
-import com.currencyconverter.web.model.UserData;
+import com.currencyconverter.web.model.SearchData;
+import com.currencyconverter.web.repository.SearchDataRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -32,8 +34,11 @@ public class CurrencyServiceImpl {
 
     private RestTemplate restTemplate;
 
-    public CurrencyServiceImpl(RestTemplateBuilder restTemplateBuilder) {
+    private SearchDataRepository searchDataRepository;
+
+    public CurrencyServiceImpl(RestTemplateBuilder restTemplateBuilder, SearchDataRepository searchDataRepository) {
         this.restTemplate = restTemplateBuilder.build();
+        this.searchDataRepository = searchDataRepository;
     }
 
     private String getResourceUrl(){
@@ -68,7 +73,7 @@ public class CurrencyServiceImpl {
         return (HashMap<String, HashMap<String, Double>>) restTemplate.getForObject(resource, Map.class);
     }
 
-    public UserData currencyConverter (String baseCurrency, String expectedCurrency, Double amount){
+    public SearchData currencyConverter (String baseCurrency, String expectedCurrency, Double amount){
         currencyConverterResource = currencyConverterApiUrl+baseCurrency+"_"+expectedCurrency+"&compact=ultra&apiKey="+currencyConverterApiKey;
 
         this.resourceUrl = currencyConverterResource;
@@ -78,7 +83,7 @@ public class CurrencyServiceImpl {
         assert result != null;
         Double rate = Double.parseDouble(String.valueOf(result.values().toArray()[0]));
 
-        UserData newData = new UserData();
+        SearchData newData = new SearchData();
 
         newData.setAmount(amount);
         newData.setRates(rate);
@@ -89,10 +94,16 @@ public class CurrencyServiceImpl {
 
         newData.setExpectedAmount(expectedAmount);
 
-
-        return  newData;
-
+        return saveSearchData(newData);
     }
 
-    //TODO: error handling, convert timestamp, cache resource, implement jmx
+    public SearchData saveSearchData(SearchData searchData){
+        return searchDataRepository.save(searchData);
+    }
+
+    public Page<SearchData> getAllRecentSearches(){
+        return searchDataRepository.findAll(PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdAt")));
+    }
+
+    //TODO:  convert timestamp, cache resource, implement jmx
 }

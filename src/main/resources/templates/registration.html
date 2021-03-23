@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://formden.com/static/cdn/font-awesome/4.4.0/css/font-awesome.min.css" />
+    <style>.bootstrap-iso .formden_header h2, .bootstrap-iso .formden_header p, .bootstrap-iso form{font-family: Arial, Helvetica, sans-serif; color: black}.bootstrap-iso form button, .bootstrap-iso form button:hover{color: white !important;} .asteriskField{color: red;}</style>
 </head>
 <body>
 <form th:action="@{/}" method="get">
@@ -59,9 +61,18 @@
                 <div class="form-group">
                     <div class="col-sm-9">
                         <label th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"
-                               class="validation-message"></label>
-                        <input type="text" th:field="*{dateOfBirth}"
+                               class="validation-message">
+                            <span class="asteriskField">*</span>
+                        </label>
+
+                        <div class="input-group">
+                            <div class="input-group-addon">
+                                <i class="fa fa-calendar-check-o">
+                                </i>
+                            </div>
+                        <input name ="dateOfBirth"type="date" th:field="*{dateOfBirth}"
                                placeholder="Date of Birth" class="form-control"/>
+                        </div>
                     </div>
                 </div>
 

@@ -1,9 +1,11 @@
 package com.currencyconverter.web.controller;
 
-import com.currencyconverter.web.model.UserData;
+import com.currencyconverter.web.dto.MessageDTO;
+import com.currencyconverter.web.model.SearchData;
 import com.currencyconverter.web.model.User;
 import com.currencyconverter.web.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+//import com.sun.tools.internal.ws.processor.model.Model;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -11,9 +13,16 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.ModelAndView;
 import com.currencyconverter.web.service.CurrencyServiceImpl;
+import org.springframework.ui.Model;
 
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+
+import java.io.IOException;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,10 +40,15 @@ public class CurrencyController {
 
     private UserService userService;
 
+    private static DecimalFormat formatter = new DecimalFormat("#.####");
+
+    private ObjectMapper mapper;
+
 
     public CurrencyController(CurrencyServiceImpl service, UserService userService, ObjectMapper mapper) {
         this.service=service;
         this.userService= userService;
+        this.mapper = mapper;
     }
 
     @GetMapping(value="/authuser/home")
@@ -51,17 +65,19 @@ public class CurrencyController {
 
         Map<String, String> currencyList = service.currencyList();
 
+
         modelAndView.addObject("userName", "Welcome " + user.getUserName() + "/" + user.getFirstName() + " " + user.getLastName() + " (" + user.getEmail() + ")");
         modelAndView.addObject("baseCurrency",baseCurrency);
         modelAndView.addObject("currencyList",currencyList);
         modelAndView.addObject("currencyRateList",rates);
-        modelAndView.addObject("userData", new UserData());
+        modelAndView.addObject("userData", new SearchData());
+        modelAndView.addObject("recentSearches", service.getAllRecentSearches());
         modelAndView.setViewName("authuser/index");
         return modelAndView;
     }
 
     @PostMapping(value="/authuser/home")
-    public ModelAndView processHistoricalData(UserData userDataInput, BindingResult bindingResult) throws ParseException {
+    public ModelAndView processHistoricalData(SearchData searchDataInput, BindingResult bindingResult) throws ParseException {
         ModelAndView modelAndView = new ModelAndView();
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -69,7 +85,7 @@ public class CurrencyController {
 
         Date historicalDate;
 
-        historicalDate = userDataInput.getHistoricalDate() == null? new Date(): userDataInput.getHistoricalDate();
+        historicalDate = searchDataInput.getHistoricalDate() == null? new Date(): searchDataInput.getHistoricalDate();
 
 
         HashMap<String, HashMap<String, Double>> currencyHistoryData = service.getHistoricalData(historicalDate);
@@ -86,19 +102,17 @@ public class CurrencyController {
 
 
 
+        if(searchDataInput.getAmount() != null){
+            String baseCurrencyInput = searchDataInput.getBaseCurrencyInput();
 
-
-        if(userDataInput.getAmount() != null){
-            String baseCurrencyInput = userDataInput.getBaseCurrencyInput();
-
-            String expectedCurrencyInput = userDataInput.getExpectedCurrencyInput();
-            Double amount = userDataInput.getAmount();
-            UserData conversionResult = service.currencyConverter(baseCurrencyInput,expectedCurrencyInput, amount);
+            String expectedCurrencyInput = searchDataInput.getExpectedCurrencyInput();
+            Double amount = searchDataInput.getAmount();
+            SearchData conversionResult = service.currencyConverter(baseCurrencyInput,expectedCurrencyInput, amount);
 
             Map<String, String> results = new HashMap<>();
-            results.put("converted", conversionResult.getExpectedAmount().toString()+" "+conversionResult.getExpectedCurrencyInput());
-            results.put("amount",conversionResult.getAmount().toString()+ " "+conversionResult.getBaseCurrencyInput());
-            results.put("rates", conversionResult.getRates().toString()+" "+conversionResult.getExpectedCurrencyInput()+"_"+conversionResult.getBaseCurrencyInput());
+            results.put("converted",formatter.format(conversionResult.getExpectedAmount())+" "+conversionResult.getExpectedCurrencyInput());
+            results.put("amount", formatter.format(conversionResult.getAmount())+ " "+conversionResult.getBaseCurrencyInput());
+            results.put("rates", formatter.format(conversionResult.getRates())+" "+conversionResult.getExpectedCurrencyInput()+"_"+conversionResult.getBaseCurrencyInput());
 
             modelAndView.addObject("conversionResults", results);
         }
@@ -109,9 +123,18 @@ public class CurrencyController {
         modelAndView.addObject("valueDate",timeStamp);
         modelAndView.addObject("currencyList",currencyList);
         modelAndView.addObject("currencyRateList",rates);
-        modelAndView.addObject("userData", new UserData());
+        modelAndView.addObject("userData", new SearchData());
+        modelAndView.addObject("recentSearches", service.getAllRecentSearches());
 
         modelAndView.setViewName("authuser/index");
         return modelAndView;
+    }
+
+
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ModelAndView handleClientError(HttpClientErrorException ex, Model model) throws IOException {
+        MessageDTO dto = mapper.readValue(ex.getResponseBodyAsByteArray(), MessageDTO.class);
+        model.addAttribute("error", (dto.getDescription() == null? dto.getMessage(): dto.getDescription()));
+        return home();
     }
 }

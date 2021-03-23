@@ -3,3 +3,14 @@
     font-size: 22px;
     color: #004080;
 }
+.fakeimg {
+    height: 200px;
+    background: #aaa;
+}
+.bootstrap-iso .formden_header h2, .bootstrap-iso .formden_header p, .bootstrap-iso form{font-family: Arial, Helvetica, sans-serif; color: black}
+.bootstrap-iso form button, .bootstrap-iso form button:hover{color: white !important;}
+.asteriskField{color: red;}
+
+.navbar{
+    color: #ffffff;
+}
