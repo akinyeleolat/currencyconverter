@@ -105,5 +105,5 @@ public class CurrencyServiceImpl {
         return searchDataRepository.findAll(PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdAt")));
     }
 
-    //TODO: error handling, convert timestamp, cache resource, implement jmx
+    //TODO:  convert timestamp, cache resource, implement jmx
 }

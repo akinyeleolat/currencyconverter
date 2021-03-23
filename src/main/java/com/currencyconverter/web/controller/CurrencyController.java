@@ -134,7 +134,7 @@ public class CurrencyController {
     @ExceptionHandler(HttpClientErrorException.class)
     public ModelAndView handleClientError(HttpClientErrorException ex, Model model) throws IOException {
         MessageDTO dto = mapper.readValue(ex.getResponseBodyAsByteArray(), MessageDTO.class);
-        model.addAttribute("error", dto.getMessage());
+        model.addAttribute("error", (dto.getDescription() == null? dto.getMessage(): dto.getDescription()));
         return home();
     }
 }
