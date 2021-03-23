@@ -1,7 +1,6 @@
 package com.currencyconverter.web.configuration;
 
 import com.currencyconverter.web.service.MyUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -15,13 +14,15 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
+
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Autowired
     private MyUserDetailsService userDetailsService;
 
-
+    public WebSecurityConfiguration(BCryptPasswordEncoder bCryptPasswordEncoder, MyUserDetailsService userDetailsService) {
+        this.bCryptPasswordEncoder=bCryptPasswordEncoder;
+        this.userDetailsService=userDetailsService;
+    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {

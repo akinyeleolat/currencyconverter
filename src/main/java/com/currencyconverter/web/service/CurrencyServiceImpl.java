@@ -1,6 +1,7 @@
 package com.currencyconverter.web.service;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -35,6 +36,8 @@ public class CurrencyServiceImpl {
     private RestTemplate restTemplate;
 
     private SearchDataRepository searchDataRepository;
+
+    private static DecimalFormat formatter = new DecimalFormat("#.####");
 
     public CurrencyServiceImpl(RestTemplateBuilder restTemplateBuilder, SearchDataRepository searchDataRepository) {
         this.restTemplate = restTemplateBuilder.build();
@@ -73,7 +76,14 @@ public class CurrencyServiceImpl {
         return (HashMap<String, HashMap<String, Double>>) restTemplate.getForObject(resource, Map.class);
     }
 
-    public SearchData currencyConverter (String baseCurrency, String expectedCurrency, Double amount){
+    public Map<String, String> currencyConverter (SearchData searchDataInput){
+
+        String baseCurrency = searchDataInput.getBaseCurrencyInput();
+
+        String expectedCurrency = searchDataInput.getExpectedCurrencyInput();
+
+        Double amount = searchDataInput.getAmount();
+
         currencyConverterResource = currencyConverterApiUrl+baseCurrency+"_"+expectedCurrency+"&compact=ultra&apiKey="+currencyConverterApiKey;
 
         this.resourceUrl = currencyConverterResource;
@@ -94,7 +104,14 @@ public class CurrencyServiceImpl {
 
         newData.setExpectedAmount(expectedAmount);
 
-        return saveSearchData(newData);
+        SearchData conversionResult= saveSearchData(newData);
+
+        Map<String, String> results = new HashMap<>();
+        results.put("converted",formatter.format(conversionResult.getExpectedAmount())+" "+conversionResult.getExpectedCurrencyInput());
+        results.put("amount", formatter.format(conversionResult.getAmount())+ " "+conversionResult.getBaseCurrencyInput());
+        results.put("rates", formatter.format(conversionResult.getRates())+" "+conversionResult.getExpectedCurrencyInput()+"_"+conversionResult.getBaseCurrencyInput());
+
+        return results;
     }
 
     public SearchData saveSearchData(SearchData searchData){
@@ -105,5 +122,5 @@ public class CurrencyServiceImpl {
         return searchDataRepository.findAll(PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "createdAt")));
     }
 
-    //TODO:  convert timestamp, cache resource, implement jmx
+    //TODO: cache resource, implement jmx
 }

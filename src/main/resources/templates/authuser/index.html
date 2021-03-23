@@ -189,8 +189,8 @@
                 </form>
             </div>
             <div class="container">
-                Base Currency: <span th:text="${baseCurrency}"></span>
-                <!--timestamp-->
+                Base Currency: <span th:text="${baseCurrency}"></span><br>
+                Value as of: <span th:text="${#dates.format(valueDate)}"></span>
             </div>
             <div class="alert alert-danger" role="alert" th:if="${error != null}">
                 <span th:if="${error != null}" th:text="${error}"></span>
