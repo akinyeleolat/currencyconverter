@@ -5,7 +5,6 @@ import com.currencyconverter.web.model.SearchData;
 import com.currencyconverter.web.model.User;
 import com.currencyconverter.web.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-//import com.sun.tools.internal.ws.processor.model.Model;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,7 +38,6 @@ public class CurrencyController {
 
     private UserService userService;
 
-    private static DecimalFormat formatter = new DecimalFormat("#.####");
 
     private ObjectMapper mapper;
 
@@ -103,16 +100,8 @@ public class CurrencyController {
 
 
         if(searchDataInput.getAmount() != null){
-            String baseCurrencyInput = searchDataInput.getBaseCurrencyInput();
 
-            String expectedCurrencyInput = searchDataInput.getExpectedCurrencyInput();
-            Double amount = searchDataInput.getAmount();
-            SearchData conversionResult = service.currencyConverter(baseCurrencyInput,expectedCurrencyInput, amount);
-
-            Map<String, String> results = new HashMap<>();
-            results.put("converted",formatter.format(conversionResult.getExpectedAmount())+" "+conversionResult.getExpectedCurrencyInput());
-            results.put("amount", formatter.format(conversionResult.getAmount())+ " "+conversionResult.getBaseCurrencyInput());
-            results.put("rates", formatter.format(conversionResult.getRates())+" "+conversionResult.getExpectedCurrencyInput()+"_"+conversionResult.getBaseCurrencyInput());
+            Map<String, String> results = service.currencyConverter(searchDataInput);
 
             modelAndView.addObject("conversionResults", results);
         }
